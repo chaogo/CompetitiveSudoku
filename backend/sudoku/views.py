@@ -33,7 +33,11 @@ def make_move(request):
     game_board[row][col] = value
 
     # Here you would have your AI make a move and update the game board
-    # naive ai
-    game_board[0][0] = 0
+    i, j, k = compute_best_move_with_ai(game_board)
+    game_board[i][j] = k
 
     return JsonResponse({'game_board': game_board})
+
+def compute_best_move_with_ai(game_board):
+    # naive ai
+    return (0, 0, 0)
