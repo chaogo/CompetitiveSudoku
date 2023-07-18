@@ -16,7 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from sudoku import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('get-game-board/', views.get_game_board, name='get_game_board'),
+    path('make-move/', views.make_move, name='make_move'),
 ]
