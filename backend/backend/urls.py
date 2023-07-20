@@ -17,9 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from sudoku import views
+from django.views.generic import TemplateView
+from django.urls import re_path
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('get-game-board/', views.get_game_board, name='get_game_board'),
-    path('make-move/', views.make_move, name='make_move'),
+    path('api/get-game-board/', views.get_game_board, name='get_game_board'),
+    path('api/make-move/', views.make_move, name='make_move'),
 ]

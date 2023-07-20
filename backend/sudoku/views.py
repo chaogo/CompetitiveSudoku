@@ -8,12 +8,15 @@ import json
 
 # Your game board
 game_board = [
-    [None, 3, None, 1, 5, 2],
-    [None, 1, None, 4, None, 3],
-    [5, None, None, None, 1, 4],
-    [1, None, None, 6, None, None],
-    [3, 2, 1, None, 4, 6],
-    [None, None, None, None, None, 1]
+    [5, 3, 0, 0, 7, 0, 0, 0, 0],
+    [6, 0, 0, 1, 9, 5, 0, 0, 0],
+    [0, 9, 8, 0, 0, 0, 0, 6, 0],
+    [8, 0, 0, 0, 6, 0, 0, 0, 3],
+    [4, 0, 0, 8, 0, 3, 0, 0, 1],
+    [7, 0, 0, 0, 2, 0, 0, 0, 6],
+    [0, 6, 0, 0, 0, 0, 2, 8, 0],
+    [0, 0, 0, 4, 1, 9, 0, 0, 5],
+    [0, 0, 0, 0, 8, 0, 0, 7, 9],
 ]
 
 def get_game_board(request):
@@ -40,4 +43,4 @@ def make_move(request):
 
 def compute_best_move_with_ai(game_board):
     # naive ai
-    return (0, 0, 0)
+    return (0, 0, -1)
