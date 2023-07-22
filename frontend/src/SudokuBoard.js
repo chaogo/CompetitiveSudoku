@@ -41,11 +41,14 @@ const SudokuBoard = () => {
 
     // Send an HTTP POST request to the backend with the selected cell's coordinates and the entered number
     axios
-      .post("/api/make-move", { row, col, number })
+      .post("http://127.0.0.1:8000/api/make-move/", { row, col, number })
       .then((response) => {
-        // Once you receive a response from the backend, update the board with the new game state
-        const updatedBoard = response.data.game_board;
-        setBoard(updatedBoard);
+        // Once you receive a response from the backend, update the cell in the board state
+
+        const updatedBoard = [...board]; // Create a new copy of the board state
+        const { row, col, number } = response.data; // Extract the row, col, and number from the response
+        updatedBoard[row][col] = number; // Update the specific cell in the new board state
+        setBoard(updatedBoard); // Set the board state to the new board state
 
         // Clear the selectedCell state
         setSelectedCell(null);
@@ -61,8 +64,13 @@ const SudokuBoard = () => {
       {board.map((row, rowIndex) => (
         <div key={rowIndex} style={{ display: "flex" }}>
           {row.map((cell, colIndex) => (
-            <div
+            <input
+              type="number"
+              min="1"
+              max="9"
               key={colIndex}
+              value={cell !== 0 ? cell : ""}
+              readOnly={cell !== 0} // Make the input read-only if the cell value is not 0
               style={{
                 width: "50px",
                 height: "50px",
@@ -76,9 +84,8 @@ const SudokuBoard = () => {
                 color: cell !== 0 ? "#333333" : "#000000",
               }}
               onClick={() => handleCellClick(rowIndex, colIndex)}
-            >
-              {cell !== 0 ? cell : ""}
-            </div>
+              onChange={handleNumberInput}
+            />
           ))}
         </div>
       ))}

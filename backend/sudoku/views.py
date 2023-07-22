@@ -30,17 +30,17 @@ def make_move(request):
     # Get the player's move from the request
     row = data['row']
     col = data['col']
-    value = data['value']
+    number = data['number']
 
     # Update the game board with the player's move
-    game_board[row][col] = value
+    game_board[row][col] = number
 
     # Here you would have your AI make a move and update the game board
     i, j, k = compute_best_move_with_ai(game_board)
     game_board[i][j] = k
 
-    return JsonResponse({'game_board': game_board})
+    return JsonResponse({'row': i, 'col': j, 'number': k})
 
 def compute_best_move_with_ai(game_board):
     # naive ai
-    return (0, 0, -1)
+    return (1, 1, -1)
