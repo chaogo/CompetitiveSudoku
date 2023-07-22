@@ -6,18 +6,22 @@ const SudokuBoard = () => {
   const [board, setBoard] = useState([]);
 
   useEffect(() => {
+    // asynchronous
     // Fetch the initial game state from the backend when the component mounts
     axios
       .get("http://127.0.0.1:8000/api/get-game-board")
       .then((response) => {
-        console.log("helloChao");
-        const initialBoard = response.data.board;
-        setBoard(initialBoard);
+        setBoard(response.data.game_board);
       })
       .catch((error) => {
         console.error("Error:", error);
       });
   }, []);
+
+  // If the board is still an empty array, render a loading message
+  if (!board) {
+    return <div>Loading...</div>;
+  }
 
   const handleCellClick = (row, col) => {
     setSelectedCell({ row, col });
