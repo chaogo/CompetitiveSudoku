@@ -55,7 +55,7 @@ CHANNEL_LAYERS = {
 ASGI_APPLICATION = 'sudoku_project.routing.application'
 AUTHENTICATION_BACKENDS = ['django.contrib.auth.backends.ModelBackend']
 
-LOGIN_REDIRECT_URL = '/'  # Redirect to homepage after login
+LOGIN_REDIRECT_URL = '/sudoku_app/choose_game'  # Redirect to homepage after login
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
