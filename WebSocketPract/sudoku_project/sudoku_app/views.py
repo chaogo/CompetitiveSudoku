@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 
 def create_game(request):
     game = SudokuGame.objects.create(player1=request.user)
-    return JsonResponse({'game_id': game.id})
+    return redirect('start_game', game_id=game.id)
 
 @login_required
 def choose_game(request):
@@ -30,4 +30,7 @@ def join_game(request, game_id):
     game.status = 'ready'
     game.save()
 
-    return JsonResponse({'message': 'Successfully joined the game!'})
+    return redirect('start_game', game_id=game_id)
+
+def start_game(request, game_id):
+    return render(request, 'sudoku_app/start_game.html', {'game_id': game_id})
