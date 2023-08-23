@@ -3,7 +3,7 @@ import threading
 from channels.generic.websocket import AsyncWebsocketConsumer
 
 import sys
-sys.path.append('/Users/chao/Desktop/fj/Projects/CompetitiveSudoku/CompetitiveSudoku/WebSocketPract')
+sys.path.append('/Users/chao/Desktop/fj/Projects/CompetitiveSudoku/CompetitiveSudoku')
 # TODO: relative path
 
 from game_logic.simulate_game import simulate_game
