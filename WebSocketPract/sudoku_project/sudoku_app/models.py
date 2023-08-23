@@ -3,9 +3,9 @@ from django.contrib.auth.models import User
 
 
 class SudokuGame(models.Model):
-    # A simple string of 81 zeros for a 9x9 board.
-    board = models.TextField(default="0"*81)
-    current_state = models.TextField(default="0"*81)
+    # game board is  game board, taboo moves, scores, etc should be stored in the database, but for now they are handled by the game logic
+    # board = models.TextField(default="0"*81)
+    # current_state = models.TextField(default="0"*81)
     player1 = models.ForeignKey(
         User, related_name="player1", on_delete=models.CASCADE)
     player2 = models.ForeignKey(
