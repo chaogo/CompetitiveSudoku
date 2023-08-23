@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class SudokuConfig(AppConfig):
+class SudokuAppConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'sudoku'
+    name = 'sudoku_app'

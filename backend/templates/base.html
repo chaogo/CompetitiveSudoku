@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Default Title{% endblock %}</title>
+    <!-- Common CSS, JS, etc. -->
+  </head>
+  <body>
+    <header>
+      <!-- Common header content like navigation bar -->
+    </header>
+
+    <main>
+      {% block content %}
+      <!-- This block will be overridden by templates that extend base.html -->
+      {% endblock %}
+    </main>
+
+    <footer>
+      <!-- Common footer content -->
+    </footer>
+  </body>
+</html>

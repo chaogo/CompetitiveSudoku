@@ -1,0 +1,15 @@
+<!-- templates/choose_game.html -->
+
+{% extends "base.html" %} {% block content %}
+<h2>Welcome, {{ user.username }}!</h2>
+
+<p>What would you like to do?</p>
+
+<a href="{% url 'create_game' %}">Create a New Game</a>
+<br />
+<form action="{% url 'join_game_view' %}" method="get">
+  <label for="game_id">Or enter Game ID to join:</label>
+  <input type="text" id="game_id" name="game_id" />
+  <input type="submit" value="Join Game" />
+</form>
+{% endblock %}

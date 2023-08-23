@@ -1,0 +1,41 @@
+<!-- templates/choose_game.html -->
+
+{% extends "base.html" %} {% block content %}
+
+<h2>Welcome to Game ID: {{ game_id }}</h2>
+
+<p>Click the button below to start the game:</p>
+
+<button onclick="startGame()">Start Game</button>
+
+<script>
+  function startGame() {
+    var socket = new WebSocket("ws://127.0.0.1:8000/ws/sudoku/{{game_id}}/");
+
+    socket.onopen = function (event) {
+      console.log("WebSocket connection opened:", event);
+      // socket.send(JSON.stringify({ message: "Hello!" }));
+    };
+
+    socket.onmessage = function (event) {
+      console.log("Message received:", event.data);
+      // Handle the received data, update the UI, etc.
+    };
+
+    socket.onclose = function (event) {
+      if (event.wasClean) {
+        console.log(
+          `Connection closed cleanly, code=${event.code}, reason=${event.reason}`
+        );
+      } else {
+        console.error("Connection died");
+      }
+    };
+
+    socket.onerror = function (error) {
+      console.error(`WebSocket Error: ${error.message}`);
+    };
+  }
+</script>
+
+{% endblock %}

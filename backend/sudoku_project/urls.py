@@ -1,5 +1,5 @@
 """
-URL configuration for backend project.
+URL configuration for sudoku_project project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.2/topics/http/urls/
@@ -15,13 +15,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-from sudoku import views
-from django.views.generic import TemplateView
-from django.urls import re_path
+from django.urls import path, include
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/get-game-board/', views.get_game_board, name='get_game_board'),
-    path('api/make-move/', views.make_move, name='make_move'),
+    path('login/', auth_views.LoginView.as_view(), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('sudoku_app/', include('sudoku_app.urls'))
 ]
