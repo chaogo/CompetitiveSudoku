@@ -6,9 +6,9 @@ import sys
 sys.path.append('/Users/chao/Desktop/fj/Projects/CompetitiveSudoku/CompetitiveSudoku')
 # TODO: relative path
 
-from game_logic.simulate_game import simulate_game
-from game_logic.sudoku import GameState, Move
-from game_logic.games import active_games
+from game_controller.simulate_game import simulate_game
+from game_controller.sudoku import GameState, Move
+from game_controller.games import active_games
 
 from .models import SudokuGame
 from asgiref.sync import sync_to_async
