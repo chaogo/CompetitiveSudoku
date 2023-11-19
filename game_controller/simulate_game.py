@@ -1,5 +1,5 @@
 import copy
-from .sudoku import GameState, SudokuBoard, load_sudoku_from_text
+from .utils import GameState, SudokuBoard, load_sudoku_from_text
 from .games import active_games
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync

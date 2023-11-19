@@ -7,7 +7,7 @@ sys.path.append('/Users/chao/Desktop/fj/Projects/CompetitiveSudoku/CompetitiveSu
 # TODO: relative path
 
 from game_controller.simulate_game import simulate_game
-from game_controller.sudoku import GameState, Move
+from game_controller.utils import Move
 from game_controller.games import active_games
 
 from .models import SudokuGame
