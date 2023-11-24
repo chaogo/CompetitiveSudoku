@@ -1,4 +1,7 @@
 from typing import Tuple
+import os
+from pathlib import Path
+import tempfile
 
 class Move(object):
     """A Move is a tuple (i, j, value) that represents the action board.put(i, j, value) for a given
@@ -239,3 +242,28 @@ def print_board(board: SudokuBoard) -> str:
             out.write('╝\n')
 
     return out.getvalue()
+
+
+def execute_command(command: str) -> str:
+    import subprocess
+    try:
+        output = subprocess.check_output(command, stderr=subprocess.STDOUT, shell=True)
+    except subprocess.CalledProcessError as proc:
+        output = proc.output
+    return output.decode("utf-8").strip()
+
+
+def solve_sudoku(solve_sudoku_path: str, board_text: str, options: str='') -> str:
+    """
+    Execute the solve_sudoku program.
+    @param solve_sudoku_path: The location of the solve_sudoku executable.
+    @param board_text: A string representation of a sudoku board.
+    @param options: Additional command line options.
+    @return: The output of solve_sudoku.
+    """
+    if not os.path.exists(solve_sudoku_path):
+        raise RuntimeError(f'No oracle found at location "{solve_sudoku_path}"')
+    filename = tempfile.NamedTemporaryFile(prefix='solve_sudoku_').name
+    Path(filename).write_text(board_text)
+    command = f'{solve_sudoku_path} {filename} {options}'
+    return execute_command(command)
