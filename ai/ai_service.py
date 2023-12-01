@@ -1,5 +1,7 @@
-import importlib
+import sys
 import os
+sys.path.append('/Users/chao/Desktop/fj/Projects/CompetitiveSudoku/CompetitiveSudoku')
+import importlib
 from flask import Flask, request, jsonify
 from game_controller.utils import load_sudoku_from_text
 from calculate_move import calculate_move
