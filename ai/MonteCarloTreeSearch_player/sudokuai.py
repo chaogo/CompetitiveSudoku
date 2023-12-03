@@ -1,5 +1,6 @@
 from MonteCarloTreeSearch_player import MonteCarloTreeSearchNode, State
-from game_controller.utils import GameState, Move, SudokuBoard, TabooMove
+from game_controller.utils import Move, SudokuBoard, TabooMove
+from game_controller.game_state import GameState
 from ai.sudokuai import SudokuAI
 import time
 import numpy as np

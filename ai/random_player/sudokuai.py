@@ -1,5 +1,6 @@
 import re
-from game_controller.utils import GameState, Move, solve_sudoku
+from game_controller.utils import Move, solve_sudoku
+from game_controller.game_state import GameState
 from ai.sudokuai import SudokuAI
 import platform
 

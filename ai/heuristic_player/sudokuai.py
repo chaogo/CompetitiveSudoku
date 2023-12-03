@@ -1,4 +1,5 @@
-from game_controller.utils import GameState, Move, TabooMove
+from game_controller.utils import Move, TabooMove
+from game_controller.game_state import GameState
 from ai.sudokuai import SudokuAI
 
 

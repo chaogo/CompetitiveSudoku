@@ -1,5 +1,6 @@
 import re
-from game_controller.utils import GameState, Move, solve_sudoku
+from game_controller.utils import Move, solve_sudoku
+from game_controller.game_state import GameState
 from ai.sudokuai import SudokuAI
 import platform
 
@@ -10,7 +11,7 @@ class SudokuAI(SudokuAI):
 
     def __init__(self):
         super().__init__()
-        self.solve_sudoku_path = 'bin\\solve_sudoku.exe' if platform.system() == 'Windows' else 'bin/solve_sudoku'  # N.B. this path is set from outside
+        self.solve_sudoku_path = 'bin\\solve_sudoku.exe' if platform.system() == 'Windows' else '.././game_controller/bin/solve_sudoku'  # N.B. this path is set from outside
 
     # Uses solve_sudoku to compute a greedy move.
     def compute_best_move(self, game_state: GameState) -> None:
