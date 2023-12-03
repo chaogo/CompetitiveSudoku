@@ -24,7 +24,7 @@ class GameState(object):
         self.moves = moves
         self.scores = scores
         self.current_player = current_player
-        self.move_event = Event()
+        # self.move_event = Event() # would impact the ai's multiprocessing
         self.current_move = None
 
     def switch_turns(self):
