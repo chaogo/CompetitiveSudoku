@@ -29,8 +29,8 @@ class GameState(object):
         out.write(f'Score: {self.scores[0]} - {self.scores[1]}')
         return out.getvalue()
 
-
-class GameStateHuman(GameState):
+# with human player(s) 
+class GameStateHuman(GameState): 
     def __init__(self,
                  initial_board: SudokuBoard,
                  board: SudokuBoard,
@@ -43,12 +43,14 @@ class GameStateHuman(GameState):
         """
         super().__init__(initial_board, board, taboo_moves, moves, scores)
         self.current_player = current_player
+        self.current_player_is_ai = False
         self.move_event = Event()
         self.current_move = None
 
     def switch_turns(self):
         """Switches the current player between 1 and 2."""
         self.current_player = 3 - self.current_player
+        self.current_player_is_ai = not self.current_player_is_ai
 
     def is_game_over(self):
         # Check for game termination conditions
@@ -56,9 +58,31 @@ class GameStateHuman(GameState):
         # TODO time limit reached | taboo moves made
 
     def wait_for_move(self):
+        if self.current_player_is_ai: 
+            self.ask_ai_move()
+        else: 
+            self.ask_human_move()
+        return self.current_move
+    
+    def ask_human_move(self):
         self.move_event.wait()
         self.move_event.clear()
-        return self.current_move
+
+    def ask_ai_move(self):
+        import requests
+        import json
+
+        # Define the URL and the payload
+        url = "http://127.0.0.1:8001/aiMakeMove"
+
+        payload = {
+            "game_board": self.board.__str__().strip(),
+            "ai_player": "minimax_player",
+            "time_limit": 1
+        }
+        # Make the POST request
+        move = requests.post(url, json=payload).json()
+        self.current_move = Move(move['row'], move['col'], move['val'])
 
     def add_move(self, move: Move):
         self.current_move = move
