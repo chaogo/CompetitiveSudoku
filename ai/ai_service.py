@@ -20,7 +20,7 @@ def make_move():
     # AI logic to decide the move
     move = calculate_move(game_board, ai_player, time_limit)
 
-    return jsonify({"move": {"row": move[0], "col": move[1], "val": move[2]}})
+    return jsonify({"row": move[0], "col": move[1], "val": move[2]})
 
 if __name__ == '__main__':
     host = os.environ.get('FLASK_HOST', '127.0.0.1')
