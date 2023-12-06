@@ -8,14 +8,12 @@ class GameState(object):
                  board: SudokuBoard,
                  taboo_moves: List[TabooMove],
                  moves: List[Union[Move, TabooMove]],
-                 scores: List[int],
-                 current_player: int = 1):
+                 scores: List[int]):
         """
         @param initial_board: A sudoku board. It contains the start position of a game.
         @param board: A sudoku board. It contains the current position of a game.
         @param taboo_moves: A list of taboo moves. Moves in this list cannot be played.
-        @param moves: The history of a sudoku game, starting in initial_board. The
-        history includes taboo moves.
+        @param moves: The history of a sudoku game, starting in initial_board.
         @param scores: The current scores of the first and the second player.
         """
         self.initial_board = initial_board
@@ -23,16 +21,35 @@ class GameState(object):
         self.taboo_moves = taboo_moves
         self.moves = moves
         self.scores = scores
+
+    def __str__(self):
+        import io
+        out = io.StringIO()
+        out.write(print_board(self.board))
+        out.write(f'Score: {self.scores[0]} - {self.scores[1]}')
+        return out.getvalue()
+
+
+class GameStateHuman(GameState):
+    def __init__(self,
+                 initial_board: SudokuBoard,
+                 board: SudokuBoard,
+                 taboo_moves: List[TabooMove],
+                 moves: List[Union[Move, TabooMove]],
+                 scores: List[int],
+                 current_player: int = 1):
+        """
+        Inherits from GameState1 and adds current_player and additional methods.
+        """
+        super().__init__(initial_board, board, taboo_moves, moves, scores)
         self.current_player = current_player
-        # self.move_event = Event() # would impact the ai's multiprocessing
+        self.move_event = Event()
         self.current_move = None
 
     def switch_turns(self):
-        """Gives the index of the current player (1 or 2).
-        @return The index of the current player.
-        """
+        """Switches the current player between 1 and 2."""
         self.current_player = 3 - self.current_player
-    
+
     def is_game_over(self):
         # Check for game termination conditions
         return self.board.squares.count(SudokuBoard.empty) == 0 
@@ -60,10 +77,3 @@ class GameState(object):
         # TODO Check if the move comes from current player
         # TODO Check if the move is taboo move
         return True
-    
-    def __str__(self):
-        import io
-        out = io.StringIO()
-        out.write(print_board(self.board))
-        out.write(f'Score: {self.scores[0]} - {self.scores[1]}')
-        return out.getvalue()

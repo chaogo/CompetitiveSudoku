@@ -1,12 +1,13 @@
 import copy
-from .utils import GameState, SudokuBoard, load_sudoku_from_text
+from .utils import SudokuBoard, load_sudoku_from_text
+from .game_state import GameStateHuman
 from .games import active_games
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
 def simulate_game(game_id, board_text):
     initial_board = load_sudoku_from_text(board_text)
-    game_state = GameState(initial_board, copy.deepcopy(initial_board), [], [], [0, 0])
+    game_state = GameStateHuman(initial_board, copy.deepcopy(initial_board), [], [], [0, 0])
     active_games[game_id] = game_state
 
     while not game_state.is_game_over():
