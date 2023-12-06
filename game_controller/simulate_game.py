@@ -4,6 +4,7 @@ from .game_state import GameStateHuman
 from .games import active_games
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from .referee import referee
 
 def simulate_game(game_id, board_text):
     initial_board = load_sudoku_from_text(board_text)
@@ -18,7 +19,7 @@ def simulate_game(game_id, board_text):
             f"sudoku_{game_id}",  # group name
             {
                 'type': 'broadcast_message',
-                'message': f"Player{game_state.current_player}: it's your turn"
+                'message': f"Player{game_state.current_player}: it's your turn \ncurrent gameboard:\n {str(game_state.board)}"
             }
         )
 
@@ -26,8 +27,9 @@ def simulate_game(game_id, board_text):
         move = game_state.wait_for_move()
 
         # Process the move
+        referee_message = ""
         if move:
-            game_state.make_move()
+            referee_message = referee(game_state, move) # meanwhile make move if feasible 
             # TODO calculate score
         else:
             # TODO Time limit reached, but no move was made
@@ -38,7 +40,7 @@ def simulate_game(game_id, board_text):
             f"sudoku_{game_id}",  # group name
             {
                 'type': 'broadcast_message',
-                'message': f"{str(game_state.board)}"
+                'message': referee_message
             }
         )
 

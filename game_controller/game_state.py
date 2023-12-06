@@ -39,13 +39,13 @@ class GameStateHuman(GameState):
                  scores: List[int],
                  current_player: int = 1):
         """
-        Inherits from GameState1 and adds current_player and additional methods.
+        Inherits from GameState and adds current_player and additional methods.
         """
         super().__init__(initial_board, board, taboo_moves, moves, scores)
         self.current_player = current_player
         self.current_player_is_ai = False
         self.move_event = Event()
-        self.current_move = None
+        self.current_move = Move(0, 0, 0)
 
     def switch_turns(self):
         """Switches the current player between 1 and 2."""
@@ -89,11 +89,11 @@ class GameStateHuman(GameState):
         self.move_event.set()
 
     def make_move(self):
-        if not self.current_move: return
+        if self.current_move == Move(0, 0, 0): return
         move = self.current_move
         self.board.put(move.i, move.j, move.value)
         print_board(self.board)
-        self.current_move = None # reset current move needed?
+        self.current_move = Move(0, 0, 0) # reset current move needed?
         # TODO calculate scores as well
         # TODO validate move
 
