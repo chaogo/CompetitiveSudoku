@@ -1,6 +1,3 @@
-import sys
-import os
-sys.path.append('/Users/chao/Desktop/fj/Projects/CompetitiveSudoku/CompetitiveSudoku')
 import importlib
 import multiprocessing
 import time
