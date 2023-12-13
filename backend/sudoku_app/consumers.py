@@ -81,6 +81,8 @@ class SudokuConsumer(AsyncWebsocketConsumer):
 
     async def broadcast_message(self, event):
         message = event['message']
+        board = event['board']
         await self.send(text_data=json.dumps({
-            'message': message
+            'message': message,
+            'game_board': board
         }))

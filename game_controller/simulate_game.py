@@ -10,19 +10,19 @@ def simulate_game(game_id, board_text):
     initial_board = load_sudoku_from_text(board_text)
     game_state = GameStateHuman(initial_board, copy.deepcopy(initial_board), [], [], [0, 0])
     active_games[game_id] = game_state
+    channel_layer = get_channel_layer()
+
+    # Broadcast the initial game board
+    async_to_sync(channel_layer.group_send)(
+        f"sudoku_{game_id}",  # group name
+        {
+            'type': 'broadcast_message',
+            'message': "Game Start!",
+            'board': str(game_state.board)
+        }
+    )
 
     while not game_state.is_game_over():
-        channel_layer = get_channel_layer()
-
-        # Broadcast the turn notification to the group associated with the game
-        async_to_sync(channel_layer.group_send)(
-            f"sudoku_{game_id}",  # group name
-            {
-                'type': 'broadcast_message',
-                'message': f"Player{game_state.current_player}: it's your turn \ncurrent gameboard:\n {str(game_state.board)}"
-            }
-        )
-
         # Wait for a player move
         move = game_state.wait_for_move()
 
@@ -35,12 +35,13 @@ def simulate_game(game_id, board_text):
             # TODO Time limit reached, but no move was made
             pass
 
-        # TODO send back the updated game state to the players
+        # broadcast the gamestate
         async_to_sync(channel_layer.group_send)(
             f"sudoku_{game_id}",  # group name
             {
                 'type': 'broadcast_message',
-                'message': referee_message
+                'message': f"{referee_message}    score: {game_state.scores}", # f"{referee_message}\nPlayer{game_state.current_player}: it's your turn \n",
+                'board': str(game_state.board)
             }
         )
 
