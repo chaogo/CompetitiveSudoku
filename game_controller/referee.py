@@ -6,7 +6,7 @@ from .game_state import GameStateHuman
 def referee(game_state: GameStateHuman, current_move: Move):
     i, j, value = current_move.i, current_move.j, current_move.value
     player_number = game_state.current_player
-    solve_sudoku_path = 'bin\\solve_sudoku.exe' if platform.system() == 'Windows' else '../game_controller/bin/solve_sudoku' # called from backend/manage.py -> the path need to be kept as environment varibles
+    solve_sudoku_path = 'game_controller\\bin\\solve_sudoku.exe' if platform.system() == 'Windows' else 'game_controller/bin/solve_sudoku'
     res = f'current move: {current_move}\n'
     if current_move == Move(0, 0, 0):
         return f'No move was supplied. Player {3-player_number} wins the game.'
@@ -33,11 +33,10 @@ def referee(game_state: GameStateHuman, current_move: Move):
                 player_score = int(match.group(1))
                 game_state.board.put(i, j, value)
                 game_state.moves.append(current_move)
-                move_number = move_number + 1
                 game_state.scores[player_number-1] = game_state.scores[player_number-1] + player_score
                 res += f'Reward: {player_score}\n'
 
-    if game_state.is_game_over:
+    if game_state.is_game_over():
         if game_state.scores[0] > game_state.scores[1]:
             res += '\nPlayer 1 wins the game.'
         elif game_state.scores[0] == game_state.scores[1]:
