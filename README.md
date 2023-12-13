@@ -17,9 +17,12 @@ Here's the point breakdown:
 | 2                 | 3             |
 | 3                 | 7             |
 
-Full rules? will come soon.
+## What's the Progress?
 
-## What's the Status?
+Up Next: Gameboard generation, Game mode selection, Improved user/game management, Deployment, Enhanced frontend UI, etc.
 
-Got the basics down, but there's a lot more to come (you'll see some TODOs in the code). For now, you can give it a try on WebSocket tools like WebSocketKing.
-![Alt text](progress.png)
+Dec 13, 2023: Got the AI microservice and Referee integrated to the game, and basic frontend completed. For now, you can play it with AI visually through your browser.
+![Alt text](progress2.png)
+
+Aug 24, 2023: Got the basics down, but there's a lot more to come (you'll see some TODOs in the code). For now, you can give it a try on WebSocket tools like WebSocketKing.
+![Alt text](progress1.png)
