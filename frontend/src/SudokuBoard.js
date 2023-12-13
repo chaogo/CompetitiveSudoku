@@ -1,24 +1,53 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState, useEffect, useRef } from "react";
 
 const SudokuBoard = () => {
   const [selectedCell, setSelectedCell] = useState(null);
   const [board, setBoard] = useState([]);
+  const [message, setMessage] = useState("");
+  const ws = useRef(null);
 
   useEffect(() => {
-    // asynchronous
-    // Fetch the initial game state from the backend when the component mounts
-    axios
-      .get("http://127.0.0.1:8000/api/get-game-board")
-      .then((response) => {
-        setBoard(response.data.game_board);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+    ws.current = new WebSocket("ws://127.0.0.1:8000/ws/sudoku/15/");
+    // Listen for messages
+    ws.current.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.message) {
+        setMessage(data.message);
+      }
+      if (data.game_board) {
+        // Split the entire string by newlines
+        const allLines = data.game_board.trim().split("\n");
+
+        // Extract the first line for height and width information
+        const [height, width] = allLines[0].trim().split(/\s+/).map(Number);
+
+        // Process the remaining lines as the board
+        const board = allLines.slice(1).map((row) =>
+          row
+            .trim()
+            .split(/\s+/)
+            .map((cell) => (cell === "." ? "0" : cell))
+        );
+        setBoard(board);
+      }
+    };
+
+    ws.current.onerror = (error) => {
+      console.error("WebSocket Error:", error);
+    };
+
+    ws.current.onclose = () => {
+      console.log("WebSocket connection closed");
+    };
+
+    return () => {
+      if (ws.current) {
+        console.log("Cleaning up WebSocket");
+        // ws.current.close(); // need fix
+      }
+    };
   }, []);
 
-  // If the board is still an empty array, render a loading message
   if (!board) {
     return <div>Loading...</div>;
   }
@@ -29,34 +58,32 @@ const SudokuBoard = () => {
 
   const handleNumberInput = (e) => {
     const { value } = e.target;
-    const updatedBoard = [...board];
-    const { row, col } = selectedCell;
-    updatedBoard[row][col] = parseInt(value);
-    setBoard(updatedBoard);
+    if (selectedCell) {
+      const updatedBoard = [...board];
+      const { row, col } = selectedCell;
+      updatedBoard[row][col] = parseInt(value);
+      setBoard(updatedBoard);
+    }
   };
 
   const handleSubmitMove = () => {
-    const { row, col } = selectedCell;
-    const number = board[row][col];
+    if (selectedCell && ws.current) {
+      const { row, col } = selectedCell;
+      const number = board[row][col];
 
-    // Send an HTTP POST request to the backend with the selected cell's coordinates and the entered number
-    axios
-      .post("http://127.0.0.1:8000/api/make-move/", { row, col, number })
-      .then((response) => {
-        // Once you receive a response from the backend, update the cell in the board state
+      // Structure the data as required by the server
+      const moveData = {
+        action: "move",
+        move: {
+          i: row,
+          j: col,
+          value: number,
+        },
+      };
 
-        const updatedBoard = [...board]; // Create a new copy of the board state
-        const { row, col, number } = response.data; // Extract the row, col, and number from the response
-        updatedBoard[row][col] = number; // Update the specific cell in the new board state
-        setBoard(updatedBoard); // Set the board state to the new board state
-
-        // Clear the selectedCell state
-        setSelectedCell(null);
-      })
-      .catch((error) => {
-        // Handle any error that occurred during the request
-        console.error("Error:", error);
-      });
+      // Send the structured data as a JSON string
+      ws.current.send(JSON.stringify(moveData));
+    }
   };
 
   return (
@@ -69,8 +96,8 @@ const SudokuBoard = () => {
               min="1"
               max="9"
               key={colIndex}
-              value={cell !== 0 ? cell : ""}
-              readOnly={cell !== 0} // Make the input read-only if the cell value is not 0
+              value={cell !== "0" ? cell : ""}
+              readOnly={cell !== "0"}
               style={{
                 width: "50px",
                 height: "50px",
@@ -104,6 +131,10 @@ const SudokuBoard = () => {
       >
         Submit Move
       </button>
+      <div style={{ marginTop: "20px" }}>
+        <strong>Messages:</strong>
+        <div>{message}</div>
+      </div>
     </div>
   );
 };
