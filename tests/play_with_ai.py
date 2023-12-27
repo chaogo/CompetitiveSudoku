@@ -8,7 +8,7 @@ import re
 import time
 from pathlib import Path
 from subprocess import TimeoutExpired
-from game_controller import GameState, solve_sudoku, Move, TabooMove, load_sudoku_from_text, SudokuBoard
+from game_controller import GameState, solve_sudoku, Move, TabooMove, load_sudoku_from_text, SudokuBoard, get_initial_sudoku_board
 from ai.sudokuai import SudokuAI
 
 
@@ -128,12 +128,11 @@ def simulate_game(initial_board: SudokuBoard, human_player_number: int, AI_playe
             print("You lose.")
 
 
-def play_with_AI(board_name: str, play_first: bool, opponent_name: str, time_limit_for_human: int, time_limit_for_AI: int):
+def play_with_AI(initial_board: SudokuBoard, play_first: bool, opponent_name: str, time_limit_for_human: int, time_limit_for_AI: int):
     solve_sudoku_path = 'bin\\solve_sudoku.exe' if platform.system() == 'Windows' else '../game_controller/bin/solve_sudoku'
     human_player_number = 1 if play_first else 2
     AI_player = importlib.import_module('ai.' + opponent_name + '.sudokuai', package='tests').SudokuAI()
-    board = load_sudoku_from_text(Path(f"../game_controller/boards/{board_name}.txt").read_text())
-    simulate_game(board, human_player_number, AI_player, solve_sudoku_path, time_limit_for_human, time_limit_for_AI)
+    simulate_game(initial_board, human_player_number, AI_player, solve_sudoku_path, time_limit_for_human, time_limit_for_AI)
 
 
 if __name__ == '__main__':
@@ -141,5 +140,5 @@ if __name__ == '__main__':
     opponent_name = "greedy_player"  # can choose from "Team6_A1", "Team6_A2", "Team6_A3", "random_player", and "greedy_player"
     time_limit_for_human = 600  # set a time limit for players
     time_limit_for_AI = 1  # in seconds
-    initial_board_name = "random-3x3"  # can choose from "/boards"
-    play_with_AI(initial_board_name, play_first, opponent_name, time_limit_for_human, time_limit_for_AI)
+    initial_board = get_initial_sudoku_board()
+    play_with_AI(initial_board, play_first, opponent_name, time_limit_for_human, time_limit_for_AI)

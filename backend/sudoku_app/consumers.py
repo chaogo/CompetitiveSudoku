@@ -1,7 +1,7 @@
 import json
 import threading
 from channels.generic.websocket import AsyncWebsocketConsumer
-from game_controller import simulate_game, Move, active_games
+from game_controller import simulate_game, Move, active_games, get_initial_sudoku_board
 from .models import SudokuGame
 from asgiref.sync import sync_to_async
 
@@ -42,19 +42,8 @@ class SudokuConsumer(AsyncWebsocketConsumer):
         game = await self.get_game()
 
         # Start a new game using threading TODO a separate function: only when two players both have joined and are ready, simulate game gets called
-        
-        board_text = '''3 3
-            .   .   1   6   8   2   9   3   .
-            9   .   .   .   4   1   .   .   5
-            .   .   .   .   7   9   .   4   .
-            3   1   .   .   .   .   .   8   9
-            7   .   .   1   9   3   .   5   .
-            6   .   4   7   5   8   3   2   1
-            1   4   .   .   .   7   .   .   .
-            .   .   .   .   1   .   8   .   .
-            8   .   .   9   .   5   6   .   4
-        '''
-        thread = threading.Thread(target=simulate_game, args=(self.game_id, board_text))
+        initial_board = get_initial_sudoku_board()
+        thread = threading.Thread(target=simulate_game, args=(self.game_id, initial_board))
         thread.start()
 
     async def disconnect(self, close_code):

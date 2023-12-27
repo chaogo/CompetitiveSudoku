@@ -114,6 +114,23 @@ class SudokuBoard(object):
             out.write('\n')
         return out.getvalue()
     
+def get_initial_sudoku_board(m: int = 3, n: int = 3) -> SudokuBoard:
+    """
+    Generate a game board with the given size, or other requirement (TODO)
+    @param m: the number of rows in a region.
+    @param n: the number of columns in a region.
+    @return: The generated Sudoku board.
+    """
+    # temporary solution: randomly choose a board within the existing boards folder
+    import os
+    import random
+    boards_path = '/Users/chao/Desktop/Projects/CompetitiveSudoku/game_controller/boards'
+    files = [f for f in os.listdir(boards_path)]
+    random_file = random.choice(files)
+    random_board_path = os.path.join(boards_path, random_file)
+    print(random_board_path)
+    return load_sudoku_from_file(random_board_path)
+
 def load_sudoku_from_text(text: str) -> SudokuBoard:
     """
     Loads a sudoku board from a string, in the same format as used by the SudokuBoard.__str__ function.
@@ -136,6 +153,16 @@ def load_sudoku_from_text(text: str) -> SudokuBoard:
             value = int(s)
             result.squares[k] = value
     return result
+
+def load_sudoku_from_file(filename: str) -> SudokuBoard:
+    """
+    Loads a sudoku board from a file, in the same format as used by the SudokuBoard.__str__ function.
+    @param filename: A file name.
+    @return: The generated Sudoku board.
+    """
+    from pathlib import Path
+    text = Path(filename).read_text()
+    return load_sudoku_from_text(text)
 
 def print_board(board: SudokuBoard) -> str: 
     """print a sudoku board in a pretty way
