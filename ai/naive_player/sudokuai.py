@@ -1,7 +1,6 @@
 import random
 import time
-from game_controller.utils import Move, SudokuBoard, TabooMove
-from game_controller.game_state import GameState
+from game_controller import SudokuBoard, Move, TabooMove, GameState
 from ai.sudokuai import SudokuAI
 
 

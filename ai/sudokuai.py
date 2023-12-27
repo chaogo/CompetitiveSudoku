@@ -1,5 +1,5 @@
 from typing import List
-from game_controller.game_state import GameState, Move
+from game_controller import GameState, Move
 
 
 class SudokuAI(object):

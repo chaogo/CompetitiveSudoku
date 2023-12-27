@@ -1,4 +1,5 @@
-from game_controller.utils import Move, SudokuBoard, TabooMove, print_board
+from .move import Move, TabooMove
+from .board import SudokuBoard, print_board
 from typing import List, Union
 from threading import Event
 

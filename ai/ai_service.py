@@ -1,7 +1,7 @@
 import os
 import importlib
 from flask import Flask, request, jsonify
-from game_controller.utils import load_sudoku_from_text
+from game_controller import load_sudoku_from_text
 from calculate_move import calculate_move
 
 

@@ -1,6 +1,7 @@
 import platform
 import re
-from game_controller.utils import Move, TabooMove, solve_sudoku
+from .move import Move, TabooMove
+from .utils import solve_sudoku
 from .game_state import GameStateHuman
 
 def referee(game_state: GameStateHuman, current_move: Move):

@@ -1,10 +1,10 @@
 import copy
-from .utils import SudokuBoard, load_sudoku_from_text
+from .board import SudokuBoard, load_sudoku_from_text
 from .game_state import GameStateHuman
 from .games import active_games
+from .referee import referee
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from .referee import referee
 
 def simulate_game(game_id, board_text):
     initial_board = load_sudoku_from_text(board_text)

@@ -3,8 +3,7 @@ import multiprocessing
 import time
 import copy
 from typing import List
-from game_controller.game_state import GameState
-from game_controller.utils import load_sudoku_from_text, SudokuBoard
+from game_controller import load_sudoku_from_text, SudokuBoard, GameState
 from sudokuai import SudokuAI
 
 

@@ -1,9 +1,7 @@
 import json
 import threading
 from channels.generic.websocket import AsyncWebsocketConsumer
-from game_controller.simulate_game import simulate_game
-from game_controller.utils import Move
-from game_controller.games import active_games
+from game_controller import simulate_game, Move, active_games
 from .models import SudokuGame
 from asgiref.sync import sync_to_async
 

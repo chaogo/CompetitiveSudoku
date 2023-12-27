@@ -1,6 +1,6 @@
 import sys
 import os
-sys.path.append('/Users/chao/Desktop/fj/Projects/CompetitiveSudoku/CompetitiveSudoku')
+sys.path.append('/Users/chao/Desktop/Projects/CompetitiveSudoku')
 import importlib
 import multiprocessing
 import platform
@@ -8,8 +8,7 @@ import re
 import time
 from pathlib import Path
 from subprocess import TimeoutExpired
-from game_controller.game_state import GameState
-from game_controller.utils import load_sudoku_from_text, Move, TabooMove, SudokuBoard, solve_sudoku
+from game_controller import GameState, solve_sudoku, Move, TabooMove, load_sudoku_from_text, SudokuBoard
 from ai.sudokuai import SudokuAI
 
 

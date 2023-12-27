@@ -1,4 +1,4 @@
-from game_controller.utils import Move, SudokuBoard
+from game_controller import Move, SudokuBoard
 import copy
 
 points_rule = {0: 0, 1: 1, 2: 3, 3: 7}
