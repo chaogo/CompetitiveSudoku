@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 
 const SudokuBoard = () => {
   const [selectedCell, setSelectedCell] = useState(null);
@@ -6,7 +7,13 @@ const SudokuBoard = () => {
   const [message, setMessage] = useState("");
   const ws = useRef(null);
 
+  // Use useLocation to access the state passed from DifficultyChoice
+  const location = useLocation();
+
   useEffect(() => {
+    const difficulty = location.state?.difficulty;
+    console.log("Selected Difficulty:", difficulty);
+
     ws.current = new WebSocket("ws://127.0.0.1:8000/ws/sudoku/15/");
     // Listen for messages
     ws.current.onmessage = (event) => {
