@@ -1,7 +1,13 @@
 from .player import Player
 from .move import Move, TabooMove
 from .board import SudokuBoard, print_board
+from .games import active_games
+from .utils import solve_sudoku
 from typing import List, Union
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+import platform
+import re
 
 class GameState(object):
     def __init__(self,
@@ -40,7 +46,7 @@ class GameStatePlus(GameState):
                  player1: Player,
                  player2: Player):
         """
-        Inherits from GameState, plus players
+        Inherits from GameState, plus players, and functions to run the game
         """
         super().__init__(initial_board, board, taboo_moves, moves, scores)
         self.player1 = player1
@@ -55,3 +61,83 @@ class GameStatePlus(GameState):
 
     def wait_for_move(self):
         return self.current_player.get_move(self.board)
+
+    def simulate_game(self, game_id: int):
+        channel_layer = get_channel_layer()
+
+        # Broadcast the initial game board
+        async_to_sync(channel_layer.group_send)(
+            f"sudoku_{game_id}",  # group name
+            {
+                'type': 'broadcast_message',
+                'message': "Game Start!",
+                'board': str(self.board)
+            }
+        )
+
+        while not self.is_game_over():
+            # Wait for a player move
+            move = self.wait_for_move()
+
+            # Process the move
+            referee_message = ""
+            if move:
+                referee_message = self.referee(move) # meanwhile make move if feasible 
+
+            # broadcast the gamestate
+            async_to_sync(channel_layer.group_send)(
+                f"sudoku_{game_id}",  # group name
+                {
+                    'type': 'broadcast_message',
+                    'message': f"{referee_message}    score: {self.scores}", # f"{referee_message}\nPlayer{game_state.current_player}: it's your turn \n",
+                    'board': str(self.board)
+                }
+            )
+
+            # switch turns
+            self.switch_turns()
+
+        # Delete the game and end the thread naturally
+        del active_games[game_id]
+
+    def referee(self, current_move: Move):
+        i, j, value = current_move.i, current_move.j, current_move.value
+        player_number = self.current_player.number
+        solve_sudoku_path = 'game_controller\\bin\\solve_sudoku.exe' if platform.system() == 'Windows' else 'game_controller/bin/solve_sudoku'
+        res = f'current move: {current_move}\n'
+        if current_move == Move(0, 0, 0):
+            return f'No move was supplied. Player {3-player_number} wins the game.'
+        else:
+            if TabooMove(i, j, value) in self.taboo_moves:
+                return f'Error: {current_move} is a taboo move. Player {3-player_number} wins the game.'
+            
+            board_text = str(self.board)
+            options = f'--move "{self.board.rc2f(i, j)} {value}"'
+            output = solve_sudoku(solve_sudoku_path, board_text, options)
+            if 'Invalid move' in output:
+                return f'Error: {current_move} is not a valid move. Player {3-player_number} wins the game.'
+            if 'Illegal move' in output:
+                return f'Error: {current_move} is not a legal move. Player {3-player_number} wins the game.'
+            if 'has no solution' in output:
+                self.moves.append(TabooMove(i, j, value))
+                self.taboo_moves.append(TabooMove(i, j, value))
+                return f'The sudoku has no solution after the move {current_move}. Move is canceled and No reward is earned'
+            if 'The score is' in output:
+                match = re.search(r'The score is ([-\d]+)', output)
+                if not match:
+                    raise RuntimeError(f'Unexpected output of sudoku solver: "{output}".')
+                else:
+                    player_score = int(match.group(1))
+                    self.board.put(i, j, value)
+                    self.moves.append(current_move)
+                    self.scores[player_number-1] = self.scores[player_number-1] + player_score
+                    res += f'Reward: {player_score}\n'
+
+        if self.is_game_over():
+            if self.scores[0] > self.scores[1]:
+                res += '\nPlayer 1 wins the game.'
+            elif self.scores[0] == self.scores[1]:
+                res += '\nThe game ends in a draw.'
+            elif self.scores[0] < self.scores[1]:
+                res += '\nPlayer 2 wins the game.'
+        return res

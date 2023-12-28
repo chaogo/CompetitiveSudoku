@@ -2,7 +2,7 @@ import copy
 import json
 import threading
 from channels.generic.websocket import AsyncWebsocketConsumer
-from game_controller import simulate_game, Move, active_games, get_initial_sudoku_board
+from game_controller import Move, active_games, get_initial_sudoku_board
 from game_controller.game_state import GameStatePlus
 from game_controller.player import AIPlayer, HumanPlayer
 from .models import SudokuGame
@@ -50,7 +50,7 @@ class SudokuConsumer(AsyncWebsocketConsumer):
         player2 = AIPlayer(2, "AI", 3)
         game_state = GameStatePlus(initial_board, copy.deepcopy(initial_board), [], [], [0, 0], player1, player2)
         active_games[self.game_id] = game_state
-        thread = threading.Thread(target=simulate_game, args=(self.game_id,))
+        thread = threading.Thread(target=game_state.simulate_game, args=(self.game_id,))
         thread.start()
 
     async def disconnect(self, close_code):
