@@ -1,14 +1,13 @@
 import copy
 from .board import SudokuBoard, load_sudoku_from_text
-from .game_state import GameStateHuman
+from .game_state import GameStatePlus
 from .games import active_games
 from .referee import referee
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
-def simulate_game(game_id, initial_board):
-    game_state = GameStateHuman(initial_board, copy.deepcopy(initial_board), [], [], [0, 0])
-    active_games[game_id] = game_state
+def simulate_game(game_id):
+    game_state = active_games[game_id]
     channel_layer = get_channel_layer()
 
     # Broadcast the initial game board
@@ -29,10 +28,6 @@ def simulate_game(game_id, initial_board):
         referee_message = ""
         if move:
             referee_message = referee(game_state, move) # meanwhile make move if feasible 
-            # TODO calculate score
-        else:
-            # TODO Time limit reached, but no move was made
-            pass
 
         # broadcast the gamestate
         async_to_sync(channel_layer.group_send)(
@@ -47,5 +42,5 @@ def simulate_game(game_id, initial_board):
         # switch turns
         game_state.switch_turns()
 
-    # End the game and notify players
+    # Delete the game and end the thread naturally
     del active_games[game_id]

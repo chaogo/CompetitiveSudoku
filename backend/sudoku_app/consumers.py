@@ -1,7 +1,10 @@
+import copy
 import json
 import threading
 from channels.generic.websocket import AsyncWebsocketConsumer
 from game_controller import simulate_game, Move, active_games, get_initial_sudoku_board
+from game_controller.game_state import GameStatePlus
+from game_controller.player import AIPlayer, HumanPlayer
 from .models import SudokuGame
 from asgiref.sync import sync_to_async
 
@@ -43,7 +46,11 @@ class SudokuConsumer(AsyncWebsocketConsumer):
 
         # Start a new game using threading TODO a separate function: only when two players both have joined and are ready, simulate game gets called
         initial_board = get_initial_sudoku_board()
-        thread = threading.Thread(target=simulate_game, args=(self.game_id, initial_board))
+        player1 = HumanPlayer(1, "Chao", 60)
+        player2 = AIPlayer(2, "AI", 3)
+        game_state = GameStatePlus(initial_board, copy.deepcopy(initial_board), [], [], [0, 0], player1, player2)
+        active_games[self.game_id] = game_state
+        thread = threading.Thread(target=simulate_game, args=(self.game_id,))
         thread.start()
 
     async def disconnect(self, close_code):
@@ -64,7 +71,7 @@ class SudokuConsumer(AsyncWebsocketConsumer):
 
             game_state = active_games.get(self.game_id)
             if game_state:
-                game_state.add_move(move)
+                game_state.current_player.set_move(move)
 
     async def broadcast_message(self, event):
         message = event['message']

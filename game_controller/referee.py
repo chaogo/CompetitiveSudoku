@@ -2,11 +2,11 @@ import platform
 import re
 from .move import Move, TabooMove
 from .utils import solve_sudoku
-from .game_state import GameStateHuman
+from .game_state import GameStatePlus
 
-def referee(game_state: GameStateHuman, current_move: Move):
+def referee(game_state: GameStatePlus, current_move: Move):
     i, j, value = current_move.i, current_move.j, current_move.value
-    player_number = game_state.current_player
+    player_number = game_state.current_player.number
     solve_sudoku_path = 'game_controller\\bin\\solve_sudoku.exe' if platform.system() == 'Windows' else 'game_controller/bin/solve_sudoku'
     res = f'current move: {current_move}\n'
     if current_move == Move(0, 0, 0):
