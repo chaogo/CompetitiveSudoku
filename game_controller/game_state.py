@@ -44,7 +44,8 @@ class GameStatePlus(GameState):
                  moves: List[Union[Move, TabooMove]],
                  scores: List[int],
                  player1: Player,
-                 player2: Player):
+                 player2: Player,
+                 is_game_over: bool = False):
         """
         Inherits from GameState, plus players, and functions to run the game
         """
@@ -52,12 +53,10 @@ class GameStatePlus(GameState):
         self.player1 = player1
         self.player2 = player2
         self.current_player = player1 # player1 by default makes the first move
+        self.is_game_over = is_game_over
 
     def switch_turns(self):
         self.current_player = self.player1 if self.current_player is self.player2 else self.player2
-
-    def is_game_over(self):
-        return self.board.squares.count(SudokuBoard.empty) == 0 
 
     def wait_for_move(self):
         return self.current_player.get_move(self.board)
@@ -82,7 +81,7 @@ class GameStatePlus(GameState):
             # Process the move
             referee_message = ""
             if move:
-                referee_message = self.referee(move) # meanwhile make move if feasible 
+                self.is_game_over, referee_message = self.referee(move) # meanwhile make move if feasible 
 
             # broadcast the gamestate
             async_to_sync(channel_layer.group_send)(
@@ -100,28 +99,28 @@ class GameStatePlus(GameState):
         # Delete the game and end the thread naturally
         del active_games[game_id]
 
-    def referee(self, current_move: Move):
+    def referee(self, current_move: Move) -> (bool, str):
         i, j, value = current_move.i, current_move.j, current_move.value
         player_number = self.current_player.number
         solve_sudoku_path = 'game_controller\\bin\\solve_sudoku.exe' if platform.system() == 'Windows' else 'game_controller/bin/solve_sudoku'
-        res = f'current move: {current_move}\n'
+        mes = f'current move: {current_move}\n'
         if current_move == Move(0, 0, 0):
-            return f'No move was supplied. Player {3-player_number} wins the game.'
+            return True, f'No move was supplied. Player {3-player_number} wins the game.'
         else:
             if TabooMove(i, j, value) in self.taboo_moves:
-                return f'Error: {current_move} is a taboo move. Player {3-player_number} wins the game.'
+                return True, f'Error: {current_move} is a taboo move. Player {3-player_number} wins the game.'
             
             board_text = str(self.board)
             options = f'--move "{self.board.rc2f(i, j)} {value}"'
             output = solve_sudoku(solve_sudoku_path, board_text, options)
             if 'Invalid move' in output:
-                return f'Error: {current_move} is not a valid move. Player {3-player_number} wins the game.'
+                return True, f'Error: {current_move} is not a valid move. Player {3-player_number} wins the game.'
             if 'Illegal move' in output:
-                return f'Error: {current_move} is not a legal move. Player {3-player_number} wins the game.'
+                return True, f'Error: {current_move} is not a legal move. Player {3-player_number} wins the game.'
             if 'has no solution' in output:
                 self.moves.append(TabooMove(i, j, value))
                 self.taboo_moves.append(TabooMove(i, j, value))
-                return f'The sudoku has no solution after the move {current_move}. Move is canceled and No reward is earned'
+                return False, f'The sudoku has no solution after the move {current_move}. Move is canceled and No reward is earned'
             if 'The score is' in output:
                 match = re.search(r'The score is ([-\d]+)', output)
                 if not match:
@@ -131,13 +130,16 @@ class GameStatePlus(GameState):
                     self.board.put(i, j, value)
                     self.moves.append(current_move)
                     self.scores[player_number-1] = self.scores[player_number-1] + player_score
-                    res += f'Reward: {player_score}\n'
+                    mes += f'Reward: {player_score}\n'
 
-        if self.is_game_over():
-            if self.scores[0] > self.scores[1]:
-                res += '\nPlayer 1 wins the game.'
-            elif self.scores[0] == self.scores[1]:
-                res += '\nThe game ends in a draw.'
-            elif self.scores[0] < self.scores[1]:
-                res += '\nPlayer 2 wins the game.'
-        return res
+        # check if the game board gets filled up after current move
+        if self.board.squares.count(SudokuBoard.empty) != 0:
+            return False, mes
+        
+        if self.scores[0] > self.scores[1]:
+            mes += '\nPlayer 1 wins the game.'
+        elif self.scores[0] == self.scores[1]:
+            mes += '\nThe game ends in a draw.'
+        elif self.scores[0] < self.scores[1]:
+            mes += '\nPlayer 2 wins the game.'
+        return True, mes
