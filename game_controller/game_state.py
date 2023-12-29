@@ -45,6 +45,7 @@ class GameStatePlus(GameState):
                  scores: List[int],
                  player1: Player,
                  player2: Player,
+                 game_id: int,
                  is_game_over: bool = False):
         """
         Inherits from GameState, plus players, and functions to run the game
@@ -52,8 +53,9 @@ class GameStatePlus(GameState):
         super().__init__(initial_board, board, taboo_moves, moves, scores)
         self.player1 = player1
         self.player2 = player2
-        self.current_player = player1 # player1 by default makes the first move
+        self.game_id = game_id
         self.is_game_over = is_game_over
+        self.current_player = player1 # player1 by default makes the first move
 
     def switch_turns(self):
         self.current_player = self.player1 if self.current_player is self.player2 else self.player2
@@ -61,18 +63,20 @@ class GameStatePlus(GameState):
     def wait_for_move(self):
         return self.current_player.get_move(self.board)
 
-    def simulate_game(self, game_id: int):
+    def broadcast_game_message(self, message):
         channel_layer = get_channel_layer()
-
-        # Broadcast the initial game board
         async_to_sync(channel_layer.group_send)(
-            f"sudoku_{game_id}",  # group name
+            f"sudoku_{self.game_id}",  # group name
             {
                 'type': 'broadcast_message',
-                'message': "Game Start!",
+                'message': message,
                 'board': str(self.board)
             }
         )
+
+    def simulate_game(self):
+        # Broadcast the initial game board
+        self.broadcast_game_message("Game Start!")
 
         while not self.is_game_over:
             # Wait for a player move
@@ -84,20 +88,13 @@ class GameStatePlus(GameState):
                 self.is_game_over, referee_message = self.referee(move) # meanwhile make move if feasible 
 
             # broadcast the gamestate
-            async_to_sync(channel_layer.group_send)(
-                f"sudoku_{game_id}",  # group name
-                {
-                    'type': 'broadcast_message',
-                    'message': f"{referee_message}    score: {self.scores}", # f"{referee_message}\nPlayer{game_state.current_player}: it's your turn \n",
-                    'board': str(self.board)
-                }
-            )
+            self.broadcast_game_message(f"{referee_message}    score: {self.scores}")
 
             # switch turns
             self.switch_turns()
 
         # Delete the game and end the thread naturally
-        del active_games[game_id]
+        del active_games[self.game_id]
 
     def referee(self, current_move: Move) -> (bool, str):
         i, j, value = current_move.i, current_move.j, current_move.value

@@ -48,9 +48,9 @@ class SudokuConsumer(AsyncWebsocketConsumer):
         initial_board = get_initial_sudoku_board()
         player1 = HumanPlayer(1, "Chao", 60)
         player2 = AIPlayer(2, "AI", 3)
-        game_state = GameStatePlus(initial_board, copy.deepcopy(initial_board), [], [], [0, 0], player1, player2)
+        game_state = GameStatePlus(initial_board, copy.deepcopy(initial_board), [], [], [0, 0], player1, player2, self.game_id)
         active_games[self.game_id] = game_state
-        thread = threading.Thread(target=game_state.simulate_game, args=(self.game_id,))
+        thread = threading.Thread(target=game_state.simulate_game)
         thread.start()
 
     async def disconnect(self, close_code):
