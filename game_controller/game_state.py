@@ -74,7 +74,7 @@ class GameStatePlus(GameState):
             }
         )
 
-        while not self.is_game_over():
+        while not self.is_game_over:
             # Wait for a player move
             move = self.wait_for_move()
 
