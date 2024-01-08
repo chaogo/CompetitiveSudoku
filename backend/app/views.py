@@ -9,7 +9,7 @@ def create_game(request):
 
 @login_required
 def choose_game(request):
-    return render(request, 'sudoku_app/choose_game.html')
+    return render(request, 'app/choose_game.html')
 
 
 def get_game_state(request, game_id):
@@ -33,4 +33,4 @@ def join_game(request, game_id):
     return redirect('start_game', game_id=game_id)
 
 def start_game(request, game_id):
-    return render(request, 'sudoku_app/start_game.html', {'game_id': game_id})
+    return render(request, 'app/start_game.html', {'game_id': game_id})

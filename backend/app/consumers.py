@@ -13,7 +13,7 @@ class SudokuConsumer(AsyncWebsocketConsumer):
     @sync_to_async
     def get_game(self):
         game = SudokuGame.objects.get(pk=self.game_id)
-        print("game_room: ", game.player1, game.player2, game.is_player1_turn)
+        print("game_room: ", game.player1, game.player2, game.status)
         print("user: ", self.scope["user"])
         return game
 

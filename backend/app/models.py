@@ -3,14 +3,11 @@ from django.contrib.auth.models import User
 
 
 class SudokuGame(models.Model):
-    # game board is  game board, taboo moves, scores, etc should be stored in the database, but for now they are handled by the game logic
-    # board = models.TextField(default="0"*81)
-    # current_state = models.TextField(default="0"*81)
+    # an IntegerField is automatically added as the primary key
     player1 = models.ForeignKey(
         User, related_name="player1", on_delete=models.CASCADE)
     player2 = models.ForeignKey(
         User, related_name="player2", on_delete=models.CASCADE, null=True)
-    is_player1_turn = models.BooleanField(default=True)
     STATUS_CHOICES = [
         ('waiting', 'Waiting for Player 2'),
         ('ready', 'Ready to Start the Game'),
@@ -19,3 +16,6 @@ class SudokuGame(models.Model):
     ]
     status = models.CharField(
         max_length=100, choices=STATUS_CHOICES, default='waiting')
+    
+    def __str__(self):
+        return f"SudokuGame {self.id}: {self.player1} vs {self.player2} - {self.status}"
