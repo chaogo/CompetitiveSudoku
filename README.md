@@ -1,8 +1,9 @@
-# Competitive Sudoku: Play Against AI or Friends!
+# Competitive Sudoku
 
 ## Description
 
-Hey there! Ever thought Sudoku could be a competitive game? Well, now it can be. This whole idea started during my Foundation of AI course at TU/e. We played around with some cool AI algorithms like minimax, heuristics, and monte carlo tree search. I thought, "Why not make this a real game?" So, here we are. The final goal is to make it like chess.com, but Sudoku style.
+Ever thought Sudoku could be a competitive game? Well, now it can be. This whole idea started during my Foundation of AI course at TU/e. We played around with some cool AI algorithms like minimax, heuristics, and Monte Carlo tree search. I thought, "Why not make this a real game?" So, here we are. 
+<!-- The goal is to make it like chess.com, but Sudoku style. -->
 
 ## How's It Played?
 
