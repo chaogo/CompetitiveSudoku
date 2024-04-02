@@ -22,6 +22,8 @@ Here's the point breakdown:
 
 Up Next: Gameboard generation, Game mode selection, Improved user/game management, Deployment, Enhanced frontend UI, etc.
 
+New Laptop Git test
+
 Dec 13, 2023: Got the AI microservice and Referee integrated to the game, and basic frontend completed. For now, you can play it with AI visually through your browser.
 ![Alt text](progress2.png)
 
